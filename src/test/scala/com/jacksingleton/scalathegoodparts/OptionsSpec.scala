@@ -3,6 +3,7 @@ package com.jacksingleton.scalathegoodparts
 import org.scalatest.FlatSpec
 
 import org.scalatest.Matchers._
+import scala.util.Try
 
 class OptionsSpec extends FlatSpec {
 
@@ -45,6 +46,27 @@ class OptionsSpec extends FlatSpec {
       }
     }
     
+    output should be ("42")
+  }
+
+  "Using Option in more complex scenario" should "be in need of a flatMap" in {
+    def lookup1(i: Int) = if (i == 0) Some("result") else None
+    def lookup2(s: String) = if (s == "result") Some(42) else None
+
+    val maybeResult: Option[Option[String]] =
+      lookup1(0) map { string =>
+        lookup2(string) map { int =>
+          int.toString
+        }
+      }
+
+    val flatMaybeResult: Option[String] = maybeResult match {
+      case Some(Some(x)) => Some(x)
+      case _ => None
+    }
+
+    val output: String = flatMaybeResult getOrElse "nada!"
+
     output should be ("42")
   }
 
